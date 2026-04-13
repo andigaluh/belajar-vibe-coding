@@ -6,25 +6,65 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "admin" },
-        password: { label: "Password", type: "password" }
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+        rememberMe: { label: "Remember Me", type: "checkbox" }
       },
-      async authorize(credentials, req) {
-        // Placeholder authentication logic
-        if (credentials?.username === "admin" && credentials?.password === "admin") {
-          return { id: "1", name: "Admin User", email: "admin@example.com" };
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+
+        try {
+          // Fallback to localhost if NEXTAUTH_URL is not set
+          const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+          const res = await fetch(`${baseUrl}/api/v1/login`, {
+            method: 'POST',
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+              rememberMe: credentials.rememberMe === 'true',
+            }),
+            headers: { "Content-Type": "application/json" }
+          });
+
+          const user = await res.json();
+
+          if (res.ok && user && !user.error) {
+            // Return user object + token
+            return {
+              id: user.data.user_id,
+              name: user.data.name,
+              email: user.data.email,
+              accessToken: user.data.token,
+            };
+          }
+          return null;
+        } catch (error) {
+          console.error("Auth authorize error:", error);
+          return null;
         }
-        return null;
       }
     }),
   ],
-  pages: {
-    signIn: "/auth/signin",
-  },
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.accessToken = user.accessToken;
+        token.id = user.id;
+      }
+      return token;
+    },
     async session({ session, token }) {
-      session.user.id = token.sub;
+      session.accessToken = token.accessToken;
+      session.user.id = token.id;
       return session;
     },
   },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 Days as global baseline, backend JWT controls specific expiry
+  },
+  pages: {
+    signIn: "/login",
+  },
+  secret: process.env.AUTH_SECRET,
 });
