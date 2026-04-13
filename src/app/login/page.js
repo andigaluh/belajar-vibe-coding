@@ -133,11 +133,9 @@ function LoginContent() {
                 }
                 label={<Typography variant="body2">Remember me</Typography>}
               />
-              <Link href="/forget-password" passHref legacyBehavior>
-                <MuiLink variant="body2" sx={{ cursor: 'pointer', textDecoration: 'none' }}>
-                  Forgot password?
-                </MuiLink>
-              </Link>
+              <MuiLink component={Link} href="/forget-password" variant="body2" sx={{ cursor: 'pointer', textDecoration: 'none' }}>
+                Forgot password?
+              </MuiLink>
             </Box>
 
             <Button
@@ -155,11 +153,9 @@ function LoginContent() {
             <Box sx={{ mt: 3, textAlign: 'center' }}>
               <Typography variant="body2">
                 Don't have an account?{' '}
-                <Link href="/register" passHref legacyBehavior>
-                  <MuiLink fontWeight="bold" sx={{ cursor: 'pointer', textDecoration: 'none' }}>
-                    Register
-                  </MuiLink>
-                </Link>
+                <MuiLink component={Link} href="/register" fontWeight="bold" sx={{ cursor: 'pointer', textDecoration: 'none' }}>
+                  Register
+                </MuiLink>
               </Typography>
             </Box>
           </Box>
