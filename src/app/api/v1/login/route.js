@@ -56,6 +56,9 @@ export async function POST(request) {
         error: false,
         message: 'login success',
         data: {
+          user_id: user.id,
+          name: user.name,
+          email: user.email,
           token: token,
         },
       },
