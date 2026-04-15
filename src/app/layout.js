@@ -1,6 +1,7 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry';
 import Providers from '@/components/Providers';
+import MainLayout from '@/components/layout/MainLayout';
 import "./globals.css";
 
 export const metadata = {
@@ -10,12 +11,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <AppRouterCacheProvider>
           <ThemeRegistry>
             <Providers>
-              {children}
+              <MainLayout>
+                {children}
+              </MainLayout>
             </Providers>
           </ThemeRegistry>
         </AppRouterCacheProvider>
