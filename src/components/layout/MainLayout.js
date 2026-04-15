@@ -2,18 +2,20 @@
 
 import React, { useState } from 'react';
 import { Box, Toolbar, CssBaseline } from '@mui/material';
+import { useSession } from 'next-auth/react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
 
-const drawerWidth = 240;
-
 export default function MainLayout({ children }) {
+  const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  const hasSession = !!session?.user;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -22,9 +24,11 @@ export default function MainLayout({ children }) {
       {/* Header */}
       <Header onDrawerToggle={handleDrawerToggle} />
       
-      <Box sx={{ display: 'flex', flexGrow: 1 }}>
-        {/* Sidebar */}
-        <Sidebar mobileOpen={mobileOpen} onDrawerToggle={handleDrawerToggle} />
+      <Box sx={{ display: 'flex', flexGrow: 1, width: '100%' }}>
+        {/* Sidebar - only show if logged in */}
+        {hasSession && (
+          <Sidebar mobileOpen={mobileOpen} onDrawerToggle={handleDrawerToggle} />
+        )}
         
         {/* Main Content */}
         <Box
@@ -32,7 +36,10 @@ export default function MainLayout({ children }) {
           sx={{
             flexGrow: 1,
             p: 3,
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            width: { 
+              xs: '100%', 
+              sm: hasSession ? '80%' : '100%' 
+            },
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -49,3 +56,4 @@ export default function MainLayout({ children }) {
     </Box>
   );
 }
+
