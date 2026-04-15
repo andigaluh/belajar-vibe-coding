@@ -70,6 +70,86 @@ export async function GET(request) {
   }
 }
 
+export async function PUT(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('user_id');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: true, message: 'Data profile GAGAL diupdate' },
+        { status: 400 }
+      );
+    }
+
+    // Authorization check
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: true, message: 'Data profile GAGAL diupdate' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split(' ')[1];
+    
+    try {
+      // Verify token
+      const decoded = jwt.verify(token, process.env.AUTH_SECRET);
+      
+      // Safety check: ensure user is updating their own profile
+      if (decoded.id.toString() !== userId.toString()) {
+        return NextResponse.json(
+          { error: true, message: 'Data profile GAGAL diupdate' },
+          { status: 403 }
+        );
+      }
+    } catch (err) {
+      return NextResponse.json(
+        { error: true, message: 'Data profile GAGAL diupdate' },
+        { status: 401 }
+      );
+    }
+
+    const { name, email } = await request.json();
+
+    // Basic validation
+    if (!name || !email) {
+      return NextResponse.json(
+        { error: true, message: 'Data profile GAGAL diupdate' },
+        { status: 400 }
+      );
+    }
+
+    // Update Query
+    const query = 'UPDATE users SET name = ?, email = ? WHERE id = ?';
+    const values = [name, email, userId];
+
+    const [result] = await pool.execute(query, values);
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json(
+        { error: true, message: 'Data profile GAGAL diupdate' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        error: false,
+        message: 'Data profile SUKSES diupdate'
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('Update user error:', error);
+    return NextResponse.json(
+      { error: true, message: 'Data profile GAGAL diupdate' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request) {
   try {
     const { name, email, password } = await request.json();
