@@ -18,7 +18,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Link from 'next/link';
 
-const drawerWidth = 240;
+const drawerWidthMobile = 240;
+const drawerWidthDesktop = '20%';
 
 const menuItems = [
   { text: 'Home', icon: <HomeIcon />, href: '/' },
@@ -48,7 +49,7 @@ export default function Sidebar({ mobileOpen, onDrawerToggle }) {
   return (
     <Box
       component="nav"
-      sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+      sx={{ width: { sm: drawerWidthDesktop }, flexShrink: { sm: 0 } }}
       aria-label="mailbox folders"
     >
       {/* Mobile drawer */}
@@ -61,7 +62,7 @@ export default function Sidebar({ mobileOpen, onDrawerToggle }) {
         }}
         sx={{
           display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidthMobile },
         }}
       >
         {drawer}
@@ -72,7 +73,7 @@ export default function Sidebar({ mobileOpen, onDrawerToggle }) {
         variant="permanent"
         sx={{
           display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidthDesktop },
         }}
         open
       >
@@ -81,3 +82,4 @@ export default function Sidebar({ mobileOpen, onDrawerToggle }) {
     </Box>
   );
 }
+
